@@ -3,6 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<!-- SỬA LỖI FONT NGHIÊM TRỌNG: bản trước dùng font-family "LXGW WenKai TC" nạp qua
+     cdn.jsdelivr.net/npm/lxgw-wenkai-tc-web - đây là domain KHÔNG nằm trong danh sách được
+     phép cho <link rel="stylesheet"> khi trang được publish làm artifact (chỉ fonts.googleapis.com
+     được phép), nên stylesheet này bị chặn âm thầm và toàn bộ hanzi/pinyin thực chất luôn
+     fallback về font hệ thống mặc định (khác nhau tuỳ máy), chưa từng thực sự hiển thị bằng
+     font đã định. Đổi sang Noto Sans TC (phồn thể, khớp dữ liệu Hán tự phồn thể của game) từ
+     Google Fonts - đúng domain được phép, và cũng là font "Hei" (sans-serif không chân) được
+     khuyến nghị bởi nghiên cứu về độ dễ đọc chữ Hán trên dark mode (Yang et al., font Hei cho
+     kết quả đọc tốt nhất so với các kiểu chữ khác trên nền tối). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <title>Trần Đăng Mạnh - 飞刀</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -10,7 +22,7 @@
   #ownerWatermark {
     position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
     z-index: 9999; pointer-events: none; user-select: none;
-    font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600;
     letter-spacing: 1.5px; text-transform: uppercase;
     color: rgba(255, 217, 61, 0.55);
     text-shadow: 0 0 6px rgba(255, 217, 61, 0.25);
@@ -21,8 +33,8 @@
   }
 
   body {
-    background: #0b0e14;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #13171e;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #fff;
     overflow: hidden;
     user-select: none;
@@ -75,12 +87,19 @@
   .option-btn {
     flex: 1; padding: 8px 4px; background: #1a2238; border: 1px solid #28355c;
     color: #ccc; border-radius: 8px; cursor: pointer; font-size: 12px;
-    text-align: center; transition: all 0.2s; white-space: nowrap;
+    text-align: center; transition: all 0.22s cubic-bezier(0.25, 0.1, 0.25, 1); white-space: nowrap;
   }
   .option-btn:hover { border-color: #ffd93d; }
   .option-btn.selected {
     background: #2a3a66; border-color: #ffd93d; color: #ffd93d;
     box-shadow: 0 0 8px rgba(255, 217, 61, 0.3);
+  }
+  /* Viền sáng khi đang điều hướng bằng bàn phím (Tab để nhảy vào nhóm, mũi tên trái/phải để
+     đổi lựa chọn trong nhóm - xem JS phần "ĐIỀU HƯỚNG BÀN PHÍM CHO CÁC NHÓM LỰA CHỌN").
+     Dùng :focus-visible (không phải :focus) để không hiện viền này khi bấm bằng chuột/chạm,
+     chỉ hiện khi thực sự dùng bàn phím để di chuyển - đúng hành vi trình duyệt hiện đại. */
+  .option-btn:focus-visible {
+    outline: none; border-color: #7df9ff; box-shadow: 0 0 0 2px rgba(76, 224, 216, 0.5);
   }
 
   /* LIBRARY LIST */
@@ -94,6 +113,12 @@
   .lib-item.missed-lib { border-color: #ff5e7a; background: #2c1a2e; }
   .lib-name { font-size: 13px; color: #e0e6ff; font-weight: bold; }
   .lib-meta { font-size: 11px; color: #7a86c8; margin-top: 2px; }
+  .missed-clear-btn {
+    flex: 0 0 auto; padding: 6px 8px; background: transparent; border: 1px solid #ff5e7a;
+    color: #ff8fa3; border-radius: 7px; cursor: pointer; font-size: 12px; line-height: 1;
+  }
+  .missed-clear-btn:hover:not(:disabled) { background: rgba(255,94,122,0.12); }
+  .missed-clear-btn:disabled { opacity: 0.28; cursor: default; }
 
   /* CURSOR CHO CÁC PHẦN TỬ CÓ THỂ BẤM TRONG MENU */
   .lib-item, .option-btn, .toggle-input-btn, #startBtn, .save-row button,
@@ -107,7 +132,7 @@
     width: 100%; padding: 10px; background: #182036; border: 1px dashed #ffd93d;
     color: #ffd93d; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; margin-top: 10px;
   }
-  #customInputBox { display: none; margin-top: 10px; background: #0b0e14; padding: 12px; border-radius: 8px; border: 1px solid #28355c; }
+  #customInputBox { display: none; margin-top: 10px; background: #13171e; padding: 12px; border-radius: 8px; border: 1px solid #28355c; }
   #customInputBox.active { display: block; }
   textarea {
     width: 100%; height: 110px; background: #121829; color: #e0e0ff;
@@ -127,7 +152,7 @@
 
   #startBtn {
     width: 100%; padding: 14px; background: linear-gradient(90deg, #ff2ea6, #ffd93d);
-    border: none; border-radius: 8px; color: #0b0e14; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 16px;
+    border: none; border-radius: 8px; color: #13171e; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 16px;
   }
 
   /* LỊCH SỬ LUYỆN TẬP */
@@ -150,6 +175,7 @@
 
   /* GAME SCREEN */
   #gameScreen { position: relative; background: radial-gradient(ellipse at top, #151d36 0%, #05070e 100%); }
+  #gameScreen, #gameScreen button, #gameScreen .falling-word, #gameScreen .hit-card { font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; }
   #hud {
     position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center;
     padding: 12px 24px; z-index: 10; font-size: 15px; background: rgba(11, 14, 20, 0.85); border-bottom: 1px solid #28355c;
@@ -157,42 +183,67 @@
   #hud .hud-item { background: rgba(18, 24, 41, 0.8); padding: 6px 14px; border-radius: 20px; border: 1px solid #28355c; }
   #missedDisplay { color: #ff8fa3; }
   #scoreDisplay { color: #ffd93d; }
-  #comboDisplay { color: #39ff14; }
+  #comboDisplay { color: #5fe07a; }
 
   /* FALLING WORDS */
   .falling-word {
     position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; white-space: nowrap; pointer-events: none; transform: translate(-50%, 0);
+    text-align: center; white-space: nowrap; pointer-events: none;
+    /* Vị trí/transform được điều khiển trực tiếp bằng requestAnimationFrame trong JS. */
   }
   .falling-word .pinyin-label {
-    font-size: 13px; font-weight: bold; color: #8f9bba; letter-spacing: 1px; margin-top: 3px;
+    /* Font RIÊNG cho pinyin: dấu thanh (ā ē ě ī ō ǎ ǐ ǒ...) không có đủ trong Noto Sans TC, nên
+       trình duyệt chèn glyph từ font khác vào giữa từ -> chữ lệch dòng, lệch độ đậm. Noto Sans
+       có đủ Latin mở rộng + dấu thanh nên cả từ vẽ từ 1 font duy nhất. */
+    font-family: "Noto Sans", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-variant-ligatures: none; font-kerning: none;
+    font-size: 13px; font-weight: 700; color: #8f9bba; letter-spacing: 0.5px; margin-top: 3px;
   }
+  /* Thống nhất: TOÀN BỘ các dòng (hanzi, pinyin, nghĩa) của từ đang target dùng CHUNG 1 màu
+     nhấn duy nhất (vàng ấm) thay vì mỗi dòng một màu khác nhau (trước đây pinyin dùng cyan,
+     hanzi dùng vàng, nghĩa lại dùng màu khác) - giảm rối mắt khi nhìn từ đang nhắm tới. */
   .falling-word.is-target .pinyin-label { color: #7df9ff; text-shadow: 0 0 6px rgba(125, 249, 255, 0.6); }
-  .falling-word .pinyin-label .char-done { color: #39ff14; text-shadow: 0 0 10px #39ff14; }
+  .falling-word .pinyin-label .char-done { color: #5fe07a; text-shadow: 0 0 8px rgba(95,224,122,0.5); }
   .falling-word .hanzi-label {
-    font-size: 36px; font-weight: bold; color: #ffffff; text-shadow: 0 0 12px rgba(255,255,255,0.4);
+    /* Xám sáng (không trắng thuần) theo khuyến nghị nghiên cứu độ dễ đọc chữ Hán trên dark
+       mode (Yang et al., 2023): trắng tuyệt đối + glow trắng gây "halation" (quầng loá) rõ
+       rệt hơn nhiều so với xám sáng cùng độ tương phản - đặc biệt với chữ Hán nhiều nét mảnh. */
+    font-size: 36px; font-weight: bold; color: #e4e7ee; text-shadow: 0 0 6px rgba(228,231,238,0.3);
   }
-  .falling-word.is-target .hanzi-label { color: #ffd93d; text-shadow: 0 0 18px #ffd93d; }
+  .falling-word.is-target .hanzi-label { color: #ffd93d; text-shadow: 0 0 14px rgba(255,217,61,0.7); }
   .falling-word.hide-pinyin .pinyin-label .char-remaining { visibility: hidden; }
 
   /* CHẾ ĐỘ: NGƯỜI MỚI - hiện sẵn nghĩa tiếng Việt ngay dưới pinyin, không cần đợi gõ đúng */
   .falling-word .beginner-meaning-label {
-    font-size: 14px; font-weight: 600; color: #b6ffb0; margin-top: 6px;
+    /* MÀU CHỨC NĂNG CỐ ĐỊNH: nghĩa tiếng Việt LUÔN dùng xanh lá nhạt xuyên suốt mọi chế độ
+       (đồng bộ với .meaning-label bên dưới) - trước đây mỗi chế độ dùng 1 màu khác nhau cho
+       cùng loại nội dung "nghĩa" (trắng ở meaning-label, xanh lá nhạt khác ở đây), phá vỡ
+       liên kết màu-ý nghĩa. Nghiên cứu về mã hoá ngữ nghĩa qua màu sắc (levels-of-processing)
+       cho thấy việc GIỮ 1 màu cố định cho 1 loại thông tin giúp não hình thành phản xạ phân
+       loại nhanh hơn, hỗ trợ ghi nhớ tốt hơn màu đổi tuỳ tiện. */
+    font-size: 14px; font-weight: 600; color: #a8e6b0; margin-top: 6px;
     width: 150px; white-space: normal; line-height: 1.25; max-height: 2.4em; overflow: hidden;
-    text-shadow: 0 0 8px rgba(182,255,176,0.35);
+    text-shadow: 0 0 6px rgba(168,230,176,0.3);
   }
-  .falling-word.is-target .beginner-meaning-label { color: #d9ffb0; text-shadow: 0 0 10px rgba(217,255,176,0.5); }
+  .falling-word.is-target .beginner-meaning-label { color: #c8f0c0; text-shadow: 0 0 12px rgba(200,240,192,0.6); }
 
   /* CHẾ ĐỘ: NHÌN NGHĨA - GÕ PINYIN - THƯỞNG HANZI */
   .falling-word .meaning-label {
-    font-size: 18px; font-weight: bold; color: #ffffff; text-shadow: 0 0 12px rgba(255,255,255,0.4);
-    width: 180px; white-space: normal; line-height: 1.25; max-height: 2.5em; overflow: hidden;
+    /* Đồng bộ màu CHỨC NĂNG với .beginner-meaning-label: nghĩa tiếng Việt luôn xanh lá nhạt
+       (trước đây trắng thuần #ffffff, khác màu với beginner-meaning-label dù cùng là "nghĩa"). */
+    font-size: 18px; font-weight: bold; color: #a8e6b0; text-shadow: 0 0 6px rgba(168,230,176,0.3);
+    width: 180px; height: 2.5em; min-height: 2.5em;
+    white-space: normal; line-height: 1.25; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
     transition: color 0.15s ease-out;
   }
-  .falling-word.is-target .meaning-label { color: #ffd93d; text-shadow: 0 0 18px #ffd93d; }
+  .falling-word.is-target .meaning-label { color: #ffd93d; text-shadow: 0 0 14px rgba(255,217,61,0.7); }
   .falling-word .meaning-label.revealed-hanzi {
-    font-size: 36px; color: #39ff14; text-shadow: 0 0 16px #39ff14;
-    max-height: none; animation: rewardPop 0.3s ease-out;
+    font-size: 36px; color: #5fe07a; text-shadow: 0 0 12px rgba(95,224,122,0.55);
+    height: 2.5em; min-height: 2.5em; max-height: 2.5em;
+    white-space: nowrap;
+    animation: rewardPop 0.3s ease-out;
   }
   @keyframes rewardPop {
     0% { transform: scale(0.6); opacity: 0.4; }
@@ -206,10 +257,13 @@
   .falling-word.is-removing .meaning-label.revealed-hanzi { transition: transform 0.15s ease-out; }
   .falling-word.is-removing.completed .meaning-label.revealed-hanzi { transform: scale(1.15); }
   .falling-word .hanzi-label.key-flash,
-  .falling-word .meaning-label.key-flash { animation: keyFlash 0.15s ease-out; }
+  .falling-word .meaning-label.key-flash { animation: keyFlash 0.12s ease-out; }
+  /* Hoạt ảnh gõ đúng: đổi hẳn sang kiểu "chớp sáng" đơn giản, sắc, tắt nhanh - giống hiệu ứng
+     phản hồi hệ thống kiểu Windows (chỉ sáng lên rồi tắt), KHÔNG phóng to/thu nhỏ (scale) như
+     trước đây, vì hiệu ứng scale tạo cảm giác "nảy" kiểu game hơn là phản hồi gọn gàng. */
   @keyframes keyFlash {
-    0% { transform: scale(1.18); text-shadow: 0 0 26px #39ff14; }
-    100% { transform: scale(1); }
+    0% { color: #fff; text-shadow: 0 0 10px #fff, 0 0 18px #5fe07a; }
+    100% { text-shadow: none; }
   }
 
   /* GROUND & BEAR NINJA */
@@ -217,7 +271,7 @@
   
   #bearCharacter {
     position: absolute; bottom: 35px; width: 64px; height: 64px;
-    transform: translateX(-50%); transition: left 0.1s ease-out; z-index: 5;
+    transform: translateX(-50%); z-index: 5;
   }
 
   /* PROJECTILES */
@@ -226,15 +280,26 @@
     pointer-events: none;
   }
 
-  /* HIT CARD & POPUP SCORE */
+  /* HIT CARD & POPUP SCORE - CHỈ CÒN CHỮ NỔI LÊN, KHÔNG CÒN KHUNG/VIỀN/NỀN
+     (trước đây có border + background + border-radius + box-shadow tạo thành 1 cái "khung"
+     nhảy lên sau mỗi từ gõ đúng, gây cảm giác vướng mắt/rối khi chơi liên tục) */
   .hit-card {
-    position: absolute; z-index: 15; padding: 6px 14px; border: 2px solid #ffd93d;
-    border-radius: 16px; background: rgba(18, 24, 41, 0.95); text-align: center;
-    color: #fff; font-size: 15px; font-weight: bold; box-shadow: 0 0 12px #ffd93d;
-    animation: hitCardLife 1.75s cubic-bezier(.25,1,.5,1) forwards; pointer-events: none;
+    position: absolute; z-index: 15; text-align: center;
+    font-size: 15px; font-weight: bold;
+    animation: hitCardLife 1.9s cubic-bezier(.25,1,.5,1) forwards; pointer-events: none;
   }
-  .hit-card .score-popup {
-    font-size: 13px; color: #39ff14; font-weight: bold; margin-top: 2px; text-shadow: 0 0 6px #39ff14;
+  /* Hanzi to, rõ, xám sáng nổi bật - đứng yên tại vị trí vừa gõ xong, tách biệt khỏi animation
+     bay của từ gốc, để mắt có 1 điểm neo cố định mà nhìn thẳng vào thay vì phải đuổi theo
+     chuyển động (xem giải thích đầy đủ ở showHitMeaningCard). */
+  .hit-card-hanzi {
+    font-size: 30px; color: #e4e7ee; text-shadow: 0 0 10px rgba(228,231,238,0.4);
+    margin-bottom: 2px;
+  }
+  /* Nghĩa tiếng Việt: dùng ĐÚNG màu chức năng cố định (xanh lá nhạt) như mọi nơi khác hiển
+     thị nghĩa trong game - xem .meaning-label, .beginner-meaning-label - để củng cố liên kết
+     "màu xanh lá = nghĩa tiếng Việt" mỗi lần mắt bắt gặp, hỗ trợ mã hoá ngữ nghĩa nhất quán. */
+  .hit-card-meaning {
+    font-size: 16px; color: #a8e6b0; text-shadow: 0 0 6px rgba(168,230,176,0.3);
   }
   @keyframes hitCardLife {
     0% { opacity: 0; transform: translate(-50%, 0) scale(0.9); }
@@ -258,7 +323,7 @@
   .stat-value { font-size: 20px; font-weight: bold; color: #ffd93d; }
   .stat-label { font-size: 11px; color: #8f9bba; text-transform: uppercase; }
 
-  .mistakes-box { text-align: left; background: #0b0e14; border: 1px solid #28355c; border-radius: 8px; padding: 10px; max-height: 130px; overflow-y: auto; margin-bottom: 16px; }
+  .mistakes-box { text-align: left; background: #13171e; border: 1px solid #28355c; border-radius: 8px; padding: 10px; max-height: 130px; overflow-y: auto; margin-bottom: 16px; }
   .mistake-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; border-bottom: 1px solid #1a2238; }
   .btn-grid { display: flex; gap: 10px; justify-content: center; }
   .btn-grid button { padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: linear-gradient(90deg, #ff2ea6, #ffd93d); font-size: 13px; }
@@ -307,15 +372,16 @@
     /* Chữ Hán / pinyin / nghĩa rơi xuống nhỏ hơn để vừa màn hình hẹp */
     .falling-word .hanzi-label { font-size: 26px; }
     .falling-word .pinyin-label { font-size: 11px; }
-    .falling-word .meaning-label { font-size: 14px; width: 120px; }
-    .falling-word .meaning-label.revealed-hanzi { font-size: 26px; }
+    .falling-word .meaning-label { font-size: 14px; width: 120px; height: 2.5em; min-height: 2.5em; }
+    .falling-word .meaning-label.revealed-hanzi { font-size: 26px; height: 2.5em; min-height: 2.5em; max-height: 2.5em; }
 
     #bearCharacter { width: 48px; height: 48px; bottom: 68px; }
     #bearCharacter svg { width: 48px; height: 48px; }
     #ground { height: 60px; }
 
-    .hit-card { font-size: 12px; padding: 4px 10px; }
-    .hit-card .score-popup { font-size: 11px; }
+    .hit-card { font-size: 12px; }
+    .hit-card-hanzi { font-size: 24px; }
+    .hit-card-meaning { font-size: 13px; }
 
     .gameover-box { padding: 18px 14px; width: 100%; max-width: 96vw; }
     .stats-grid { gap: 8px; }
@@ -327,62 +393,19 @@
     /* Nút mở bàn phím gõ - chỉ hiện trên di động, nổi bật trong HUD */
     #openKeyboardBtn {
       display: inline-flex; align-items: center; gap: 4px;
-      background: linear-gradient(90deg, #ff2ea6, #ffd93d); color: #0b0e14;
+      background: linear-gradient(90deg, #ff2ea6, #ffd93d); color: #13171e;
       border: none; border-radius: 14px; padding: 6px 12px; font-size: 12px; font-weight: bold;
       cursor: pointer;
     }
-    #openKeyboardBtn.typing-on { background: #182036; color: #39ff14; border: 1px solid #39ff14; }
+    #openKeyboardBtn.typing-on { background: #182036; color: #5fe07a; border: 1px solid #5fe07a; }
 
-    /* Khung nổi bật RÕ RÀNG cho từ đang là mục tiêu gõ - trên mobile chữ nhỏ, khó
-       nhận ra chỉ bằng đổi màu chữ như trên desktop, nên thêm khung + nền phát sáng. */
-    .falling-word.is-target {
-      background: rgba(255, 217, 61, 0.12);
-      border: 2px solid #ffd93d;
-      border-radius: 10px;
-      padding: 3px 8px;
-      box-shadow: 0 0 14px rgba(255, 217, 61, 0.35);
-    }
+    /* Từ đang là mục tiêu gõ trên mobile: CHỈ đổi màu chữ (giống hệt desktop qua
+       .falling-word.is-target .hanzi-label ở CSS chính, không cần định nghĩa lại ở đây) -
+       bỏ hẳn khung/nền/viền/box-shadow từng bọc quanh từ trước đây, vì nhìn như 1 "hộp"
+       cứng nhắc kiểu cảnh báo, không hợp cảm giác chữ nổi tự nhiên như trên máy tính. */
 
-    /* Thanh trạng thái gõ cố định ngay phía trên bàn phím ảo: hiện lại rõ ràng
-       hanzi + pinyin của từ đang gõ và phần đã gõ đúng, để không cần nhìn lên cao
-       trong lúc tay đang thao tác gần bàn phím. */
-    #typingStatusBar {
-      position: fixed; left: 0; right: 0; z-index: 25;
-      bottom: var(--keyboard-height, 0px);
-      display: none; align-items: center; justify-content: center; gap: 10px;
-      background: rgba(11, 14, 20, 0.97); border-top: 2px solid #ffd93d;
-      padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
-      font-size: 20px; font-weight: bold;
-      transition: bottom 0.08s ease-out;
-    }
-    body.mobile-typing-active #typingStatusBar { display: flex; }
-    /* Bọc hanzi + pinyin + nghĩa vào 1 cột dọc, căn giữa, để thêm dòng nghĩa không làm
-       vỡ hàng ngang cũ (vốn chỉ có hanzi + pinyin + nút đóng nằm cùng 1 hàng). */
-    #typingStatusBar .tsb-info {
-      display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; flex: 1;
-    }
-    #typingStatusBar .tsb-hanzi { color: #ffd93d; text-shadow: 0 0 10px #ffd93d; font-size: 24px; }
-    #typingStatusBar .tsb-pinyin { color: #8f9bba; letter-spacing: 1px; font-size: 16px; }
-    #typingStatusBar .tsb-pinyin .char-done { color: #39ff14; text-shadow: 0 0 8px #39ff14; }
-    /* Dòng nghĩa tiếng Việt: chỉ hiện khi có nội dung (chế độ Người mới / Nhìn nghĩa) -
-       xem updateTypingStatusBar(), nơi textContent bị để rỗng nếu mode không cần hiện nghĩa. */
-    #typingStatusBar .tsb-meaning {
-      color: #b6ffb0; font-size: 13px; font-weight: 600; text-align: center;
-      white-space: normal; line-height: 1.2; max-width: 100%;
-    }
-    #typingStatusBar .tsb-meaning:empty { display: none; }
-    #typingStatusBar .tsb-close {
-      flex-shrink: 0; background: #1a2238; border: 1px solid #28355c; color: #ff5e7a;
-      border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: bold;
-    }
-
-    /* Khi đang gõ trên mobile, thu gọn vùng chơi phía trên để không bị bàn phím +
-       thanh trạng thái che mất, đặc biệt là mặt đất và con gấu ninja. Dùng biến động
-       --keyboard-bar-offset (= chiều cao bàn phím thật + chiều cao thanh trạng thái gõ,
-       tính bằng JS qua visualViewport) thay vì số cố định, vì chiều cao bàn phím ảo
-       khác nhau tuỳ thiết bị/hãng (Samsung, iPhone, bàn phím có gợi ý từ hay không...). */
-    body.mobile-typing-active #ground { bottom: var(--keyboard-bar-offset, 54px); }
-    body.mobile-typing-active #bearCharacter { bottom: calc(var(--keyboard-bar-offset, 54px) + 68px); }
+    /* Không dựng thêm một thanh thông tin thứ hai phía trên bàn phím.
+       Người chơi nhìn trực tiếp từ rơi; khi keyboard mở, chính vùng game sẽ co theo visualViewport. */
   }
 
   /* Máy rất nhỏ / màn hình ngắn (điện thoại nằm ngang, hoặc rất nhỏ) */
@@ -418,9 +441,9 @@
     <div class="setup-row">
       <div class="setup-group" style="flex:1;">
         <label>Cách hiển thị</label>        <div class="option-btns" id="gameModeBtns">
-          <div class="option-btn" data-value="beginner">🌱 Người mới - Xem nghĩa trước</div>
-          <div class="option-btn selected" data-value="hanzi">Nhìn Hán tự (mặc định)</div>
-          <div class="option-btn" data-value="meaning">Nhìn nghĩa - Thưởng Hán tự</div>
+          <div class="option-btn" tabindex="0" data-value="beginner">🌱 Người mới - Xem nghĩa trước</div>
+          <div class="option-btn selected" tabindex="0" data-value="hanzi">Nhìn Hán tự (mặc định)</div>
+          <div class="option-btn" tabindex="0" data-value="meaning">Nhìn nghĩa - Thưởng Hán tự</div>
         </div>
         <div class="lib-meta" style="margin-top:6px;">
           🌱 <b>Người mới</b>: hiện sẵn nghĩa + pinyin, tốc độ rất chậm, để làm quen từ trước khi luyện phản xạ.
@@ -433,25 +456,25 @@
       <div class="setup-group">
         <label>Hiển thị Pinyin</label>
         <div class="option-btns" id="pinyinToggleBtns">
-          <div class="option-btn selected" data-value="show">Hiện Pinyin</div>
-          <div class="option-btn" data-value="hide">Ẩn Pinyin</div>
+          <div class="option-btn selected" tabindex="0" data-value="show">Hiện Pinyin</div>
+          <div class="option-btn" tabindex="0" data-value="hide">Ẩn Pinyin</div>
         </div>
       </div>
       <div class="setup-group" style="flex:1.5">
         <label>Tốc độ rơi</label>
         <div class="option-btns" id="speedBtns">
-          <div class="option-btn" data-value="vslow">Rất chậm</div>
-          <div class="option-btn" data-value="slow">Chậm</div>
-          <div class="option-btn selected" data-value="medium">Vừa</div>
-          <div class="option-btn" data-value="fast">Nhanh</div>
+          <div class="option-btn" tabindex="0" data-value="vslow">Rất chậm</div>
+          <div class="option-btn" tabindex="0" data-value="slow">Chậm</div>
+          <div class="option-btn selected" tabindex="0" data-value="medium">Vừa</div>
+          <div class="option-btn" tabindex="0" data-value="fast">Nhanh</div>
         </div>
       </div>
       <div class="setup-group">
         <label>Từ rơi cùng lúc</label>
         <div class="option-btns" id="maxOnScreenBtns">
-          <div class="option-btn" data-value="1">1</div>
-          <div class="option-btn selected" data-value="2">2</div>
-          <div class="option-btn" data-value="3">3</div>
+          <div class="option-btn" tabindex="0" data-value="1">1</div>
+          <div class="option-btn selected" tabindex="0" data-value="2">2</div>
+          <div class="option-btn" tabindex="0" data-value="3">3</div>
         </div>
       </div>
     </div>
@@ -475,6 +498,9 @@
     <div class="lib-meta" style="line-height:1.8;">
       <b style="color:#ffd93d;">Space</b> — Tạm dừng / Tiếp tục &nbsp;•&nbsp;
       <b style="color:#ffd93d;">Enter</b> — Ẩn / Hiện Pinyin<br>
+      <b style="color:#ffd93d;">Tab</b> — Chọn nhóm cấu hình &nbsp;•&nbsp;
+      <b style="color:#ffd93d;">Mũi tên</b> — Đổi lựa chọn &nbsp;•&nbsp;
+      <b style="color:#ffd93d;">Enter/Space</b> — Xác nhận<br>
       <span style="color:#7df9ff;">📱 Trên điện thoại: bấm nút "⌨️ Gõ" ở góc màn hình chơi để bật bàn phím và gõ pinyin.</span>
     </div>
   </div>
@@ -495,31 +521,22 @@
   <!-- Input ẩn: mở bàn phím ảo trên điện thoại và bắt từng ký tự gõ vào -->
   <input type="text" id="mobileTypeInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
 
-  <!-- Thanh trạng thái gõ, chỉ hiện trên di động khi bàn phím đang mở -->
-  <div id="typingStatusBar">
-    <div class="tsb-info">
-      <span class="tsb-hanzi" id="tsbHanzi">?</span>
-      <span class="tsb-pinyin" id="tsbPinyin">—</span>
-      <span class="tsb-meaning" id="tsbMeaning"></span>
-    </div>
-    <button type="button" class="tsb-close" id="tsbCloseBtn">Ẩn bàn phím</button>
-  </div>
 
   <div id="wordsLayer"></div>
 
   <!-- CON GẤU TRÚC NINJA -->
   <div id="bearCharacter">
     <svg viewBox="0 0 100 100" width="64" height="64">
-      <circle cx="20" cy="25" r="14" fill="#111" />
-      <circle cx="80" cy="25" r="14" fill="#111" />
-      <circle cx="50" cy="50" r="38" fill="#ffffff" stroke="#111" stroke-width="3"/>
-      <ellipse cx="35" cy="48" rx="10" ry="14" fill="#111" transform="rotate(-10 35 48)" />
-      <ellipse cx="65" cy="48" rx="10" ry="14" fill="#111" transform="rotate(10 65 48)" />
+      <circle cx="20" cy="25" r="14" fill="#13171e" />
+      <circle cx="80" cy="25" r="14" fill="#13171e" />
+      <circle cx="50" cy="50" r="38" fill="#ffffff" stroke="#13171e" stroke-width="3"/>
+      <ellipse cx="35" cy="48" rx="10" ry="14" fill="#13171e" transform="rotate(-10 35 48)" />
+      <ellipse cx="65" cy="48" rx="10" ry="14" fill="#13171e" transform="rotate(10 65 48)" />
       <circle cx="37" cy="46" r="4" fill="#fff" />
       <circle cx="63" cy="46" r="4" fill="#fff" />
-      <polygon points="50,56 44,62 56,62" fill="#111" />
-      <path d="M 12,38 Q 50,28 88,38 L 88,46 Q 50,36 12,46 Z" fill="#ff2ea6" />
-      <circle cx="82" cy="42" r="5" fill="#ff2ea6" />
+      <polygon points="50,56 44,62 56,62" fill="#13171e" />
+      <path d="M 12,38 Q 50,28 88,38 L 88,46 Q 50,36 12,46 Z" fill="#ff5e7a" />
+      <circle cx="82" cy="42" r="5" fill="#ff5e7a" />
     </svg>
   </div>
 
@@ -529,7 +546,7 @@
     <div class="pause-box">
       <h2>TẠM DỪNG</h2>
       <button id="resumeBtn" style="margin-top:14px; padding:8px 20px; background:#ffd93d; border:none; font-weight:bold; cursor:pointer; border-radius:6px;">Tiếp tục</button>
-      <button id="quitBtn" style="margin-top:14px; padding:8px 20px; background:#ff2ea6; border:none; color:#fff; font-weight:bold; cursor:pointer; border-radius:6px;">Về Menu</button>
+      <button id="quitBtn" style="margin-top:14px; padding:8px 20px; background:#ff5e7a; border:none; color:#fff; font-weight:bold; cursor:pointer; border-radius:6px;">Về Menu</button>
     </div>
   </div>
 </div>
@@ -551,6 +568,9 @@
     <div class="btn-grid">
       <button id="reviewMistakesBtn" type="button">🔁 Ôn từ trượt ván này</button>
       <button id="restartBtn" type="button" class="secondary-btn">🏠 Menu chính</button>
+    </div>
+    <div class="lib-meta" style="text-align:center; margin-top:8px;">
+      ⌨️ <b style="color:#ffd93d;">Enter/Space</b> = Ôn từ trượt &nbsp;•&nbsp; <b style="color:#ffd93d;">Esc</b> = Menu chính
     </div>
   </div>
 </div>
@@ -821,12 +841,31 @@ function renderUI() {
   const missedItem = document.createElement("div");
   missedItem.id = "missedLibItem";
   missedItem.className = "lib-item missed-lib";
-  missedItem.innerHTML = `<div class="lib-info"><div class="lib-name">🔴 Từ hay gõ trượt (Tích lũy)</div><div class="lib-meta">${missedWords.length} từ cần ôn</div></div>`;
-  missedItem.onclick = () => {
+  missedItem.innerHTML = `
+    <div class="lib-info">
+      <div class="lib-name">🔴 Từ hay gõ trượt (Tích lũy)</div>
+      <div class="lib-meta">${missedWords.length} từ cần ôn</div>
+    </div>
+    <button type="button" class="missed-clear-btn" title="Xóa toàn bộ danh sách từ hay gõ trượt"
+      ${missedWords.length ? "" : "disabled"}>🗑</button>
+  `;
+  missedItem.onclick = (e) => {
+    if (e.target.closest(".missed-clear-btn")) return;
     const freshMissed = loadData(MISSED_KEY);
     if (freshMissed.length) selectLibrary(freshMissed, missedItem, "missed");
     else alert("Chưa có từ trượt nào!");
   };
+  const missedClearBtn = missedItem.querySelector(".missed-clear-btn");
+  missedClearBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const freshMissed = loadData(MISSED_KEY);
+    if (!freshMissed.length) return;
+    if (!confirm(`Xóa toàn bộ ${freshMissed.length} từ trong danh sách hay gõ trượt?`)) return;
+    saveData(MISSED_KEY, []);
+    const currentSettings = loadSettings();
+    if (currentSettings.libraryKey === "missed") updateSettings({ libraryKey: "default" });
+    renderUI();
+  });
   libListEl.appendChild(missedItem);
 
   const userLibs = loadData(LIB_KEY);
@@ -863,8 +902,15 @@ function renderUI() {
 }
 
 // LỊCH SỬ LUYỆN TẬP: mỗi lượt chơi lưu lại số từ đã gõ (hoàn thành) và số từ gõ đúng hoàn toàn (không sai ký tự nào)
-function saveHistoryEntry(entry) {
+// entryId (tuỳ chọn): nếu đã có 1 bản ghi tạm của CHÍNH VÁN NÀY trong lịch sử (do lưu tạm lúc
+// chuyển tab giữa chừng), CẬP NHẬT ĐÈ lên đúng bản ghi đó bằng dữ liệu mới nhất, thay vì thêm
+// dòng mới - tránh 1 ván bị xuất hiện 2 lần (1 bản dở dang cũ + 1 bản đầy đủ) trong lịch sử.
+function saveHistoryEntry(entry, entryId) {
   const hist = loadData(HISTORY_KEY);
+  if (entryId) {
+    const idx = hist.findIndex(h => h._id === entryId);
+    if (idx !== -1) { hist[idx] = { ...entry, _id: entryId }; saveData(HISTORY_KEY, hist); return; }
+  }
   hist.unshift(entry);
   if (hist.length > HISTORY_MAX_ROWS) hist.length = HISTORY_MAX_ROWS;
   saveData(HISTORY_KEY, hist);
@@ -888,7 +934,7 @@ function renderHistory() {
 
   listEl.innerHTML = hist.length ? hist.map(h => {
     const acc = h.typedWords ? Math.round((h.correctWords / h.typedWords) * 100) : 0;
-    const color = acc >= 90 ? "#39ff14" : acc >= 60 ? "#ffd93d" : "#ff5e7a";
+    const color = acc >= 90 ? "#5fe07a" : acc >= 60 ? "#ffd93d" : "#ff5e7a";
     return `<div class="history-row">
       <span class="h-date">${h.date}</span>
       <span class="h-mid">${h.correctWords}/${h.typedWords} từ đúng</span>
@@ -938,6 +984,15 @@ document.getElementById("saveListBtn").onclick = () => {
 
 // GAME STATE & CONFIG
 let state = null;
+// SPEED_CFG là tốc độ (px/giây) được HIỆU CHỈNH theo 1 chiều cao màn hình THAM CHIẾU chuẩn
+// (REFERENCE_VIEWPORT_H, ví dụ máy tính/laptop cỡ trung bình). Khi bắt đầu ván, tốc độ thực
+// tế sẽ được NHÂN THEO TỶ LỆ viewportH thật / REFERENCE_VIEWPORT_H (xem startGame) - lý do:
+// nếu giữ nguyên tốc độ px/s cố định như cũ, quãng đường rơi trên điện thoại (viewportH thấp
+// hơn nhiều so với laptop) sẽ NGẮN HƠN ở cùng 1 tốc độ, khiến người chơi có ÍT THỜI GIAN HƠN
+// để đọc/gõ dù chọn cùng 1 mức tốc độ - không công bằng giữa các loại màn hình. Bằng cách
+// scale theo tỷ lệ chiều cao, THỜI GIAN RƠI (tính bằng giây, từ đỉnh xuống đất) sẽ xấp xỉ NHƯ
+// NHAU trên mọi kích thước màn hình, đúng yêu cầu "màn hình nhỏ có đủ thời gian như laptop".
+const REFERENCE_VIEWPORT_H = 900;
 const SPEED_CFG = { vslow: 20, slow: 35, medium: 60, fast: 95 };
 
 // Khởi tạo lựa chọn ban đầu từ settings đã lưu ở lần chơi trước (yêu cầu #4: menu nhớ lựa chọn),
@@ -950,9 +1005,17 @@ let selSpeed = initialSettings.speed,
 
 // Đồng bộ hiển thị class "selected" trên đúng nút tương ứng với settings đã khôi phục,
 // vì HTML mặc định luôn đánh dấu sẵn 1 nút "selected" cứng — cần gỡ và gán lại cho đúng.
+// Đồng bộ trạng thái "selected" (chọn) của các nút trong 1 nhóm, ĐỒNG THỜI áp dụng mô hình
+// "roving tabindex": chỉ nút đang được chọn có tabindex="0" (nhận được Tab), các nút còn lại
+// trong nhóm có tabindex="-1" (bị Tab bỏ qua, nhưng vẫn focus được bằng JS qua mũi tên).
+// Lý do: nếu để MỌI nút đều tabindex="0" như mặc định, bấm Tab để vào 1 nhóm sẽ luôn dừng ở
+// nút ĐẦU TIÊN trong DOM bất kể đang chọn nút nào - gây cảm giác "nhảy lùi" lựa chọn mỗi lần
+// Tab qua nhóm đó. Với roving tabindex, Tab luôn dừng đúng ngay tại lựa chọn hiện tại.
 function syncOptionBtnsUI(containerId, matchFn) {
   document.querySelectorAll(`#${containerId} .option-btn`).forEach(b => {
-    b.classList.toggle("selected", matchFn(b));
+    const isSelected = matchFn(b);
+    b.classList.toggle("selected", isSelected);
+    b.tabIndex = isSelected ? 0 : -1;
   });
 }
 syncOptionBtnsUI("gameModeBtns", b => b.dataset.value === selMode);
@@ -1001,6 +1064,61 @@ document.querySelectorAll("#maxOnScreenBtns .option-btn").forEach(b => b.onclick
   updateSettings({ maxOnScreen: selMaxOnScreen });
 });
 
+// ====== ĐIỀU HƯỚNG BÀN PHÍM CHO CÁC NHÓM LỰA CHỌN (Cách hiển thị / Pinyin / Tốc độ / Số
+// từ rơi cùng lúc) ======
+// Mục tiêu: cho phép chọn các option-btn này hoàn toàn bằng bàn phím, không cần chuột -
+// đặc biệt hữu ích ngay sau khi vừa chơi xong 1 ván và tay vẫn đang ở bàn phím, muốn đổi
+// cấu hình rồi chơi ván tiếp theo mà không phải với tay ra chuột.
+// Cách dùng: Tab để nhảy VÀO một nhóm (dừng ở đúng nút đang được chọn "selected" trong
+// nhóm đó, không phải luôn là nút đầu tiên - để không bị "nhảy lùi" lựa chọn hiện có khi
+// chỉ đang duyệt qua bằng Tab). Trong nhóm, dùng mũi tên TRÁI/PHẢI (hoặc LÊN/XUỐNG, vì các
+// nhóm có thể xuống dòng trên màn hình hẹp) để chuyển giữa các lựa chọn, Enter hoặc Space để
+// XÁC NHẬN chọn nút đang focus (giữ hành vi giống hệt việc bấm chuột, cùng gọi qua .click()
+// để không phải viết trùng lặp logic chọn ở 2 nơi).
+const KEYBOARD_NAV_GROUPS = ["gameModeBtns", "pinyinToggleBtns", "speedBtns", "maxOnScreenBtns"];
+KEYBOARD_NAV_GROUPS.forEach(groupId => {
+  const group = document.getElementById(groupId);
+  if (!group) return;
+  group.addEventListener("keydown", (e) => {
+    // Khi nhóm đang bị khoá (ví dụ speedBtns/maxOnScreenBtns lúc chọn chế độ "Người mới"),
+    // "pointer-events: none" trong CSS chỉ chặn được chuột, KHÔNG chặn được điều hướng bàn
+    // phím - cần tự kiểm tra thêm ở đây để tránh đổi được tốc độ/số từ bằng phím dù đã khoá.
+    if (group.classList.contains("locked-group")) return;
+
+    const btns = Array.from(group.querySelectorAll(".option-btn"));
+    const currentIdx = btns.indexOf(document.activeElement);
+    if (currentIdx === -1) return; // phím bấm không nhắm vào đúng 1 option-btn trong nhóm này
+
+    // Di chuyển focus tới nút LÂN CẬN bằng mũi tên - CHỈ di chuyển con trỏ, CHƯA xác nhận
+    // chọn (giống duyệt qua các lựa chọn trước khi quyết định). Cập nhật tabIndex ngay lúc
+    // này (không đợi click) theo đúng chuẩn "roving tabindex": nút vừa focus tới tạm được
+    // tabIndex=0 để nếu người dùng Tab ra ngoài rồi Tab lại vào, quay lại đúng chỗ đang xem
+    // dở, không bị nhảy về nút đã chọn từ trước hay về nút đầu tiên.
+    const moveTo = (nextIdx) => {
+      btns.forEach(b => b.tabIndex = -1);
+      const nextBtn = btns[nextIdx];
+      nextBtn.tabIndex = 0;
+      nextBtn.focus();
+    };
+
+    if (["ArrowRight", "ArrowDown"].includes(e.key)) {
+      e.preventDefault();
+      // Bọc vòng (nút cuối -> Right lại về nút đầu) để không bị "kẹt cứng" ở 2 đầu danh sách,
+      // cảm giác giống hệt việc chuyển kênh TV bằng remote.
+      moveTo((currentIdx + 1) % btns.length);
+    } else if (["ArrowLeft", "ArrowUp"].includes(e.key)) {
+      e.preventDefault();
+      moveTo((currentIdx - 1 + btns.length) % btns.length);
+    } else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      // .click() sẽ chạy đúng logic chọn đã có (cập nhật selMode/selSpeed/...), và logic đó
+      // gọi lại syncOptionBtnsUI() để đặt tabIndex=0 chính xác cho nút vừa được XÁC NHẬN chọn
+      // (ghi đè lên tabIndex tạm thời mà mũi tên vừa set ở trên, nếu có khác nhau).
+      btns[currentIdx].click();
+    }
+  });
+});
+
 document.getElementById("startBtn").onclick = () => {
   unlockSpeechOnUserGesture();
   if (!selectedWordsForGame.length) return;
@@ -1032,16 +1150,23 @@ function startGame(words) {
   const effectiveSpeed = selMode === "beginner" ? "vslow" : selSpeed;
   const effectiveMaxOnScreen = selMode === "beginner" ? 1 : selMaxOnScreen;
 
+  // Đo chiều cao khả dụng thật NGAY LÚC NÀY (trước khi gán vào state) để tính tỷ lệ scale tốc
+  // độ theo màn hình - xem giải thích đầy đủ ở khai báo REFERENCE_VIEWPORT_H phía trên.
+  const startViewportH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const speedScaleByHeight = Math.max(0.5, Math.min(1.15, startViewportH / REFERENCE_VIEWPORT_H));
+  const scaledBaseSpeed = SPEED_CFG[effectiveSpeed] * speedScaleByHeight;
+
   state = {
     words: words.slice().sort(() => Math.random() - 0.5),
     activeWords: [], nextIdx: 0, score: 0, combo: 0, bestCombo: 0,
     missedCount: 0, ended: false,
     correctKeys: 0, wrongKeys: 0, startTime: performance.now(),
     mistakes: [], target: null, paused: false,
-    speedMode: effectiveSpeed, baseSpeed: SPEED_CFG[effectiveSpeed], speed: SPEED_CFG[effectiveSpeed],
+    speedMode: effectiveSpeed, baseSpeed: scaledBaseSpeed, speed: scaledBaseSpeed,
     maxOnScreen: effectiveMaxOnScreen, showPinyin: selShowPinyin, mode: selMode,
-    finishedCount: 0, bearX: window.innerWidth / 2, projectiles: [],
-    burstKills: 0, isRecovery: false, recoveryEndTime: 0, recoverySpawnHold: false
+    finishedCount: 0, successfulCount: 0, bearX: window.innerWidth / 2, projectiles: [],
+    burstKills: 0, isRecovery: false, recoveryEndTime: 0, recoverySpawnHold: false,
+    eightWordBreakActive: false, eightWordBreakEndTime: 0, eightWordBreakPending: false
   };
 
   // QUAN TRỌNG (fix lỗi "đứng đơ"/giật khi bàn phím ảo mobile bật lên):
@@ -1186,6 +1311,7 @@ function spawnWord() {
   }
 
   document.getElementById("wordsLayer").appendChild(el);
+  el.style.transform = `translate(-50%, 0) translate(${c.x}px, ${c.y}px)`;
 
   remainingSpan.textContent = w.pinyin;
 
@@ -1231,6 +1357,34 @@ function loop(now) {
   }
 
   const groundY = state.viewportH - 70;
+
+  // Sau mỗi 8 từ GÕ ĐÚNG TRỌN VẸN: dọn sạch sân trong 1.2 giây để tạo một nhịp nghỉ
+  // rõ ràng. Đây là "khoảng thở" theo số từ thực sự gõ xong, KHÔNG tính từ bị rơi/trượt.
+  // Giữ break riêng với recovery của chế độ Nhanh để hai cơ chế không giẫm trạng thái của nhau.
+  if (state.eightWordBreakActive) {
+    if (now >= state.eightWordBreakEndTime) {
+      state.eightWordBreakActive = false;
+      if (!state.ended) {
+        if (state.nextIdx >= state.words.length && !state.activeWords.length) {
+          gameOver();
+          return;
+        }
+        while (state.activeWords.length < state.maxOnScreen && state.nextIdx < state.words.length) {
+          spawnWord();
+        }
+      }
+    } else {
+      // Giữ sân thực sự trống trong suốt 1.2 giây; chỉ HUD + gấu vẫn còn.
+      document.getElementById("scoreDisplay").textContent = `Điểm: ${state.score}`;
+      document.getElementById("comboDisplay").textContent = `Combo: x${state.combo}`;
+      document.getElementById("progressDisplay").textContent = `${state.finishedCount} / ${state.words.length}`;
+      document.getElementById("missedDisplay").textContent = `💥 Rơi: ${state.missedCount}`;
+      const bearEl = document.getElementById("bearCharacter");
+      if (bearEl) bearEl.style.left = state.bearX + "px";
+      requestAnimationFrame(loop);
+      return;
+    }
+  }
 
   // Chế độ Nhanh: nghỉ ngắn sau chuỗi combo để người chơi kịp thở
   if (state.speedMode === "fast") {
@@ -1319,6 +1473,7 @@ function loop(now) {
     if (fw.y >= groundY) {
       speakWord(fw.hanzi);
       recordMistake(fw); // ghi từ bị trượt vào danh sách "từ hay gõ sai" để ôn lại sau
+      requeueWordSoon(fw); // cho gặp lại sau vài từ ngay trong ván này
       state.mistakes.push(fw);
       state.activeWords.splice(i, 1);
       if (state.target === fw) state.target = null;
@@ -1329,7 +1484,16 @@ function loop(now) {
       const deadEl = fw.el;
       deadEl.classList.add("is-removing", "missed");
       setTimeout(() => deadEl.remove(), 150);
-      if (!state.recoverySpawnHold) spawnWord();
+      // Không spawn từ mới nếu đang CHỜ bắt đầu khoảng nghỉ 8-từ (sân sắp trống dần, không
+      // được nạp thêm từ mới vào giữa chừng - xem giải thích ở beginEightWordBreak).
+      if (!state.recoverySpawnHold && !state.eightWordBreakPending) spawnWord();
+
+      // Sân vừa trống thêm 1 từ (do rơi) - nếu đang CHỜ bắt đầu nghỉ 8-từ và giờ sân đã
+      // trống hẳn, chính thức kích hoạt khoảng nghỉ ngay bây giờ (xem beginEightWordBreak).
+      if (state.eightWordBreakPending && !state.activeWords.length) {
+        state.eightWordBreakPending = false;
+        beginEightWordBreak(performance.now());
+      }
 
       // QUAN TRỌNG: đây là nhánh "từ bị trượt/rơi xuống đất" - phải tự kiểm tra điều kiện
       // hết game ở ĐÂY luôn (hết từ vựng + không còn từ nào trên màn), vì trước đây điều
@@ -1337,7 +1501,7 @@ function loop(now) {
       // này khiến game "đứng đơ": nếu từ CUỐI CÙNG trong bộ từ bị rơi (thay vì gõ trúng),
       // activeWords rỗng, không còn gì để hiển thị, không spawn thêm được, nhưng gameOver()
       // cũng không bao giờ được gọi -> màn hình trống, game coi như treo.
-      if (!state.activeWords.length && state.nextIdx >= state.words.length) gameOver();
+      if (!state.eightWordBreakPending && !state.activeWords.length && state.nextIdx >= state.words.length) gameOver();
     }
   }
 
@@ -1361,6 +1525,26 @@ function findMissedIndex(missed, hanzi) {
 
 // Gọi NGAY LẬP TỨC khi phát hiện lỗi gõ đầu tiên của một từ trong lượt gõ hiện tại
 // (không chờ từ đó rơi xuống đáy hay bị diệt). Không được gọi nhiều lần cho cùng 1 lượt gõ.
+// LUYỆN TẬP CÓ CHỦ ĐÍCH TRONG VÁN: khi 1 từ bị gõ sai hoặc rơi trượt, xếp nó quay lại sau
+// vài từ nữa TRONG CÙNG VÁN (thay vì phải chờ sang ván sau mới gặp lại). Khoảng cách ngắn
+// (3-5 từ) đúng tinh thần "spaced retrieval" - gặp lại khi vừa bắt đầu quên, không quá sát
+// (dễ nhớ nhờ vừa thấy) cũng không quá xa. Mỗi từ chỉ được xếp lại tối đa 2 lần/ván để tránh
+// vòng lặp vô tận làm ván chơi không bao giờ kết thúc.
+function requeueWordSoon(wordObj) {
+  if (!state || state.ended || !wordObj) return;
+  state.requeueCounts = state.requeueCounts || {};
+  const key = wordObj.hanzi;
+  if ((state.requeueCounts[key] || 0) >= 2) return;
+  state.requeueCounts[key] = (state.requeueCounts[key] || 0) + 1;
+
+  const copy = {
+    hanzi: wordObj.hanzi, pinyin: wordObj.pinyin, rawPinyin: wordObj.rawPinyin,
+    meaning: wordObj.meaning, charMap: wordObj.charMap
+  };
+  const insertAt = Math.min(state.words.length, state.nextIdx + 3 + Math.floor(Math.random() * 3));
+  state.words.splice(insertAt, 0, copy);
+}
+
 function recordMistake(wordObj) {
   const missed = loadData(MISSED_KEY);
   const idx = findMissedIndex(missed, wordObj.hanzi);
@@ -1406,6 +1590,43 @@ function refreshMissedListUI() {
 // XỬ LÝ PHÍM ĐƯỢC CẢI TIẾN (CHUYỂN MỤC TIÊU LINH HOẠT + RESET COMBO KHI LỖI + HÀNG ĐỢI CHỐNG MẤT PHÍM)
 let keyQueue = [], processingQueue = false;
 document.addEventListener("keydown", (e) => {
+  // Ở màn hình menu, Enter = Bắt đầu ngay. Không cướp Enter từ input/select/button
+  // hoặc các option-btn đang được điều hướng bằng bàn phím.
+  const setupScreen = document.getElementById("setupScreen");
+  const targetEl = e.target && e.target.nodeType === 1 ? e.target : null;
+  const isInteractiveSetupTarget = !!targetEl && (
+    /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(targetEl.tagName) ||
+    !!targetEl.closest(".option-btn")
+  );
+  if (setupScreen && setupScreen.classList.contains("active") && e.key === "Enter" && !isInteractiveSetupTarget) {
+    e.preventDefault();
+    document.getElementById("startBtn").click();
+    return;
+  }
+
+  // Màn hình KẾT QUẢ (sau khi ván đấu kết thúc): thêm phím tắt để bấm 2 nút chính mà không
+  // cần rời tay khỏi bàn phím - đúng lúc người chơi vừa gõ xong, tay vẫn đang ở bàn phím.
+  // Enter/Space = "Ôn từ trượt ván này" (hành động tiếp tục luyện tập, dùng nhiều nhất).
+  // Esc = "Menu chính" (thoát hẳn ra ngoài).
+  if (document.getElementById("gameOverScreen").classList.contains("active")) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      const reviewBtn = document.getElementById("reviewMistakesBtn");
+      // Nút "Ôn từ trượt" chỉ bấm được nếu ván vừa rồi có từ sai (xem reviewMistakesBtn.onclick);
+      // nếu không có từ sai, Enter/Space nên fallback sang menu chính luôn, tránh cảm giác
+      // bấm phím mà không có gì xảy ra.
+      if (state && state.mistakes && state.mistakes.length) reviewBtn.click();
+      else document.getElementById("restartBtn").click();
+      return;
+    }
+    if (e.key === "Escape") {
+      e.preventDefault();
+      document.getElementById("restartBtn").click();
+      return;
+    }
+    return;
+  }
+
   if (!state || state.ended) return;
 
   // Space = Tạm dừng / Tiếp tục
@@ -1436,6 +1657,7 @@ document.addEventListener("keydown", (e) => {
 // đẩy vào cùng hàng đợi keyQueue rồi xoá trắng input để luôn sẵn sàng nhận ký tự tiếp theo.
 const mobileInput = document.getElementById("mobileTypeInput");
 const openKeyboardBtn = document.getElementById("openKeyboardBtn");
+let keyboardBaselineHeight = null;
 
 mobileInput.addEventListener("input", () => {
   if (!state || state.ended || state.paused) { mobileInput.value = ""; return; }
@@ -1463,33 +1685,23 @@ if (openKeyboardBtn) {
     mobileInput.focus();
     openKeyboardBtn.classList.add("typing-on");
     openKeyboardBtn.textContent = "⌨️ Đang gõ...";
-    document.body.classList.add("mobile-typing-active");
-    updateTypingStatusBar();
+    // Ghi lại chiều cao layout trước khi bàn phím mở; visualViewport sẽ cho biết phần bị che.
+    keyboardBaselineHeight = window.innerHeight;
+    requestAnimationFrame(updateResponsiveViewportVars);
   });
 }
 
 mobileInput.addEventListener("blur", () => {
   mobileInput.classList.remove("active-catch");
-  document.body.classList.remove("mobile-typing-active");
+  keyboardBaselineHeight = null;
+  updateResponsiveViewportVars();
   if (openKeyboardBtn) {
     openKeyboardBtn.classList.remove("typing-on");
     openKeyboardBtn.textContent = "⌨️ Gõ";
   }
 });
 
-const tsbCloseBtn = document.getElementById("tsbCloseBtn");
-if (tsbCloseBtn) {
-  tsbCloseBtn.addEventListener("click", () => {
-    mobileInput.blur();
-  });
-}
 
-// Khi bắt đầu ván mới trên di động, tự mở bàn phím ngay để chơi liền tay
-function autoOpenMobileKeyboardIfNeeded() {
-  if (window.matchMedia("(max-width: 700px)").matches && openKeyboardBtn) {
-    setTimeout(() => openKeyboardBtn.click(), 300);
-  }
-}
 
 function processKeyQueue() {
   if (processingQueue) return;
@@ -1498,52 +1710,37 @@ function processKeyQueue() {
   processingQueue = false;
 }
 
-// Cập nhật thanh trạng thái gõ trên di động: hiện hanzi + pinyin của từ đang target,
-// tô xanh phần pinyin đã gõ đúng, để người chơi không cần liếc lên khu vực chữ rơi
-// (thường bị bàn phím ảo che khuất một phần) mới biết mình đang gõ đến đâu.
-function updateTypingStatusBar() {
-  const hanziEl = document.getElementById("tsbHanzi");
-  const pinyinEl = document.getElementById("tsbPinyin");
-  const meaningEl = document.getElementById("tsbMeaning");
-  if (!hanziEl || !pinyinEl) return;
-  if (!state || !state.target) {
-    hanziEl.textContent = "?";
-    pinyinEl.innerHTML = "Gõ 1 chữ cái bất kỳ để chọn mục tiêu";
-    if (meaningEl) meaningEl.textContent = "";
+function beginEightWordBreak(now) {
+  if (!state || state.ended || state.eightWordBreakActive) return;
+
+  // SỬA LỖI: trước đây hàm này xoá NGAY LẬP TỨC mọi từ đang có trên sân (kể cả từ người chơi
+  // đang gõ dở hoặc chưa kịp gõ) khi vừa đủ 8 từ đúng - với maxOnScreen >= 2, luôn có khả năng
+  // còn 1-2 từ khác đang hiển thị lúc đó, nên người chơi thấy từ đang gõ "biến mất" đột ngột,
+  // rất khó chịu. Cách sửa: nếu sân VẪN CÒN từ khác, hoãn việc bắt đầu nghỉ lại - cho phép gõ
+  // nốt (hoặc để chúng tự rơi hết) trước, không ép dừng ngay. state.eightWordBreakPending được
+  // loop() kiểm tra lại mỗi khung hình (xem đoạn xử lý trong loop()) cho tới khi sân trống
+  // thật sự thì mới chính thức kích hoạt khoảng nghỉ.
+  if (state.activeWords.length > 0) {
+    state.eightWordBreakPending = true;
     return;
   }
-  const t = state.target;
-  hanziEl.textContent = t.hanzi;
 
-  // Hiện nghĩa tiếng Việt ngay trên thanh gõ mobile, đúng tinh thần của từng chế độ:
-  // - "beginner" (Người mới): nghĩa đã hiện sẵn trên màn hình chính ngay từ đầu, nên ở đây
-  //   cũng hiện sẵn luôn, không cần chờ gõ - để tay đang thao tác gần bàn phím không phải
-  //   ngước lên nhìn lại nghĩa mỗi lần quên.
-  // - "meaning" (Nhìn nghĩa - Thưởng Hán tự): nghĩa là NGUỒN DUY NHẤT trên màn hình chính lúc
-  //   này (hanzi đang bị giấu), nên thanh mobile PHẢI hiện lại nghĩa đó, nếu không người chơi
-  //   mở bàn phím lên sẽ mất luôn manh mối duy nhất để biết cần gõ pinyin nào.
-  // - "hanzi" (mặc định): không hiện nghĩa, giữ nguyên hành vi cũ (chỉ luyện phản xạ mặt chữ).
-  if (meaningEl) {
-    meaningEl.textContent = (state.mode === "beginner" || state.mode === "meaning") ? (t.meaning || "") : "";
-  }
+  state.eightWordBreakActive = true;
+  state.eightWordBreakEndTime = now + 1200;
+  state.target = null;
 
-  const doneCount = t.typed;
-  // Dùng charMap (đã có sẵn khi parse từ vựng) để biết vị trí trong pinyin CÓ DẤU tương ứng
-  // với số ký tự rawPinyin (KHÔNG dấu) đã gõ đúng, rồi tô xanh đúng phần đó.
-  let splitPos = t.pinyin.length;
-  if (t.charMap && doneCount > 0 && doneCount <= t.charMap.length) {
-    splitPos = t.charMap[doneCount - 1];
-  } else if (doneCount === 0) {
-    splitPos = 0;
-  }
-  const donePart = t.pinyin.slice(0, splitPos);
-  const restPart = t.pinyin.slice(splitPos);
-  // Tôn trọng chế độ "Ẩn Pinyin" (state.showPinyin=false) NGAY TRÊN thanh gõ mobile: phần
-  // đã gõ đúng vẫn luôn hiện rõ (để xác nhận đang gõ đúng hướng), còn phần CHƯA gõ tới bị
-  // che bằng dấu chấm - "gõ đến đâu hiện đến đấy" - thay vì lộ nguyên cả pinyin còn lại,
-  // vốn làm chế độ ẩn/hiện trở nên vô nghĩa vì độ khó ngang nhau.
-  const restDisplay = state.showPinyin ? restPart : "•".repeat(restPart.length);
-  pinyinEl.innerHTML = `<span class="char-done">${donePart}</span>${restDisplay}`;
+  // Kết thúc nhịp recovery cũ: khoảng nghỉ 8-từ là một nhịp nghỉ độc lập.
+  state.isRecovery = false;
+  state.recoverySpawnHold = false;
+  state.burstKills = 0;
+
+  // Dọn toàn bộ chữ/phi đao/pop-up để trong 1.2s thực sự không còn từ nào trên sân.
+  state.activeWords.forEach(w => w.el && w.el.remove());
+  state.activeWords = [];
+  state.projectiles.forEach(p => p.el && p.el.remove());
+  state.projectiles = [];
+  document.querySelectorAll("#wordsLayer .falling-word, #wordsLayer .projectile, #wordsLayer .hit-card")
+    .forEach(el => el.remove());
 }
 
 function handleTypedChar(char) {
@@ -1576,14 +1773,13 @@ function handleTypedChar(char) {
     if (state.target && !state.target.hadMistake) {
       state.target.hadMistake = true;
       recordMistake(state.target);
+      requeueWordSoon(state.target);
     }
-    updateTypingStatusBar();
     return;
   }
 
   matchedWord.typed++;
   state.correctKeys++;
-  updateTypingStatusBar();
 
   // Phản hồi tức thời khi gõ đúng từng ký tự (củng cố trí nhớ vận động)
   // Chế độ nhìn Hán tự: flash trên chữ Hán. Chế độ nhìn nghĩa: flash trên dòng nghĩa tiếng Việt.
@@ -1642,13 +1838,33 @@ function handleTypedChar(char) {
     state.activeWords = state.activeWords.filter(w => w !== matchedWord);
     if (state.target === matchedWord) state.target = null;
     state.finishedCount++;
-    if (!state.recoverySpawnHold) spawnWord();
-    updateTypingStatusBar();
+    state.successfulCount++;
+
+    // Cứ đủ 8 từ gõ hoàn chỉnh thì sân trống đúng 1.2s, sau đó mới dựng nhịp từ tiếp theo.
+    const triggerEightWordBreak = (state.successfulCount % 8 === 0);
+    if (triggerEightWordBreak) {
+      beginEightWordBreak(performance.now());
+    } else if (!state.recoverySpawnHold && !state.eightWordBreakPending) {
+      // Không spawn từ mới nếu đang CHỜ bắt đầu khoảng nghỉ 8-từ (xem beginEightWordBreak) -
+      // để sân được phép trống dần, không bị nạp thêm từ mới ngăn nó trống hẳn.
+      spawnWord();
+    }
+
+    // Sân vừa trống thêm 1 từ (do gõ xong) - nếu đang CHỜ bắt đầu nghỉ 8-từ (trigger từ lượt
+    // trước đó, khi sân chưa trống hẳn) và giờ sân đã trống hẳn, chính thức kích hoạt khoảng
+    // nghỉ ngay bây giờ.
+    if (state.eightWordBreakPending && !state.activeWords.length) {
+      state.eightWordBreakPending = false;
+      beginEightWordBreak(performance.now());
+    }
 
     const deadEl = matchedWord.el;
     // Chế độ nhìn nghĩa - thưởng Hán tự: thay THẲNG nội dung của chính ô nghĩa đó
     // sang chữ Hán (không chồng thêm ô nào khác), giữ hiển thị 1.75s khớp với hit-card.
     if (matchedWord.meaningLabel) {
+      // Chế độ nhìn nghĩa: giữ nguyên chính vị trí của ô nghĩa và chỉ thay nội dung bằng Hán tự.
+      // Xóa flash cũ trước khi reveal để animation thưởng luôn sạch, không bị chồng hiệu ứng.
+      matchedWord.meaningLabel.classList.remove("key-flash");
       matchedWord.meaningLabel.textContent = matchedWord.hanzi;
       matchedWord.meaningLabel.classList.add("revealed-hanzi");
       setTimeout(() => {
@@ -1660,7 +1876,7 @@ function handleTypedChar(char) {
       setTimeout(() => deadEl.remove(), 150);
     }
 
-    if (!state.activeWords.length && state.nextIdx >= state.words.length) gameOver();
+    if (!state.eightWordBreakActive && !state.activeWords.length && state.nextIdx >= state.words.length) gameOver();
   }
 }
 
@@ -1669,18 +1885,28 @@ function showHitMeaningCard(fw, gainedPoints) {
   card.className = "hit-card";
   card.style.left = fw.x + "px";
   card.style.top = fw.y + "px";
-  // Chế độ "Nhìn nghĩa - Thưởng Hán tự" và "Người mới": người chơi đã thấy nghĩa tiếng Việt
-  // suốt từ đầu, nên card này chỉ cần hiện điểm số, không lặp lại nghĩa (tránh trùng lặp/rối mắt).
-  const meaningHtml = (state.mode === "meaning" || state.mode === "beginner") ? "" : `<div>${fw.meaning}</div>`;
-  card.innerHTML = `${meaningHtml}<div class="score-popup">+${gainedPoints}</div>`;
+  // "IN MẶT CHỮ + NGHĨA VÀO ĐẦU" ngay sau khi gõ xong pinyin - dựa trên nguyên lý "elaborative
+  // encoding" (mã hoá sâu): nghiên cứu về ghi nhớ qua lặp lại (Wang & Zhou, 2021 - "Multiple
+  // Exposures Enhance Both Item Memory and Contextual Memory") chỉ ra rằng lặp lại thuần tuý
+  // (gõ đúng ký tự) KHÔNG tự động tạo liên kết nghĩa-hình nếu không có bước xử lý ngữ nghĩa đi
+  // kèm ngay lúc đó - nếu không, việc gõ chỉ còn là "mechanical repetition" (thuộc phản xạ tay,
+  // không thuộc nghĩa). Trước đây card này CHỈ hiện nghĩa (thiếu hẳn hanzi) ở chế độ mặc định,
+  // trong khi chữ Hán chính đang đồng thời animation bay/biến mất - buộc mắt phải chia sự chú ý
+  // giữa 2 chuyển động khác nhau, làm giảm hiệu quả mã hoá. Card mới LUÔN hiện CẢ HAI (hanzi to,
+  // rõ + nghĩa tiếng Việt ngay dưới) đứng yên tại chỗ, tách biệt khỏi animation bay của từ gốc,
+  // giữ đủ lâu (1.9s) để mắt/não kịp xử lý cặp hình-nghĩa như MỘT ĐƠN VỊ duy nhất mỗi lần gõ
+  // xong - đúng tinh thần "khắc sâu có chủ đích" (deliberate practice) thay vì lặp lại vô nghĩa.
+  const showHanzi = state.mode !== "meaning"; // chế độ "meaning" đã tự lộ hanzi ngay tại chỗ (xem revealed-hanzi), không cần lặp lại ở đây
+  const hanziHtml = showHanzi ? `<div class="hit-card-hanzi">${fw.hanzi}</div>` : "";
+  const meaningHtml = `<div class="hit-card-meaning">${fw.meaning}</div>`;
+  card.innerHTML = `${hanziHtml}${meaningHtml}`;
   document.getElementById("wordsLayer").appendChild(card);
-  setTimeout(() => card.remove(), 1750);
+  setTimeout(() => card.remove(), 1900);
 }
 
 function gameOver() {
-  // Đóng bàn phím ảo + thanh trạng thái gõ khi ván đấu kết thúc, tránh kẹt giao diện mobile
+  // Đóng bàn phím ảo khi ván đấu kết thúc, tránh kẹt focus trên mobile
   mobileInput.blur();
-  document.body.classList.remove("mobile-typing-active");
   state.ended = true; // đánh dấu ván đấu đã kết thúc để dừng vòng lặp game và các thao tác gõ
 
   const elapsed = Math.max((performance.now() - state.startTime) / 60000, 0.1);
@@ -1695,7 +1921,7 @@ function gameOver() {
   const mList = document.getElementById("mistakesList");
   mList.innerHTML = state.mistakes.length ?
     state.mistakes.map(m => `<div class="mistake-row"><span style="color:#ffd93d; font-weight:bold;">${m.hanzi}</span><span>${m.meaning}</span></div>`).join("") :
-    "<div style='color:#39ff14; text-align:center;'>Xuất sắc! Không sai từ nào.</div>";
+    "<div style='color:#5fe07a; text-align:center;'>Xuất sắc! Không sai từ nào.</div>";
 
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById("gameOverScreen").classList.add("active");
@@ -1706,22 +1932,27 @@ function gameOver() {
 // Lưu lại lịch sử của lượt chơi HIỆN TẠI: tổng số từ đã gõ (hoàn thành) và số từ gõ đúng
 // hoàn toàn (không tính từ nào bị gõ sai ký tự dù cuối cùng vẫn diệt được, và không tính từ
 // bị trượt/chạm đất). Tách thành hàm riêng (thay vì chỉ gọi trong gameOver) để có thể gọi
-// từ nút "Về Menu"/thoát giữa chừng nữa - trước đây CHỈ gameOver() gọi hàm này, nên nếu người
-// chơi thoát ngang ván đấu (không gõ hết từ vựng), lịch sử của ván đó bị mất hoàn toàn dù đã
-// gõ được nhiều từ - đây chính là lý do "lúc lưu lúc không" mà người dùng gặp phải.
-// Có cờ "state.historySaved" để đảm bảo 1 ván chỉ được ghi vào lịch sử ĐÚNG 1 LẦN, tránh bị
-// đúp nếu người dùng bấm gameOver rồi lại bấm thoát ngay sau đó trong cùng 1 ván.
+// từ nút "Về Menu"/thoát giữa chừng, và từ sự kiện chuyển tab - trước đây CHỈ gameOver() gọi
+// hàm này, nên nếu người chơi thoát ngang ván đấu (không gõ hết từ vựng), lịch sử của ván đó
+// bị mất hoàn toàn dù đã gõ được nhiều từ - đây chính là lý do "lúc lưu lúc không".
+// Hàm này AN TOÀN khi gọi NHIỀU LẦN cho cùng 1 ván (mỗi lần chuyển tab, mỗi lần bấm thoát,
+// và cả lúc gameOver thật sự): lần đầu tạo bản ghi mới với 1 mã _id riêng gắn vào state, các
+// lần sau tìm đúng bản ghi đó theo _id và CẬP NHẬT ĐÈ số liệu mới nhất - nên nếu người chơi
+// lưu tạm giữa chừng rồi quay lại chơi tiếp và hoàn thành ván, lịch sử sẽ phản ánh đúng kết
+// quả CUỐI CÙNG (đầy đủ hơn), không bị kẹt lại ở bản ghi tạm dở dang hay bị nhân đôi dòng.
 function saveCurrentRunToHistory() {
-  if (!state || state.historySaved) return;
+  if (!state) return;
   // Không lưu ván trống hoàn toàn (thoát ngay khi vừa bắt đầu, chưa gõ được từ nào) - tránh
   // rác vô nghĩa trong lịch sử.
   if (state.finishedCount <= 0) return;
+  if (!state.historyEntryId) {
+    state.historyEntryId = "h" + Date.now() + Math.random().toString(36).slice(2, 7);
+  }
   const typedWords = state.finishedCount;
   const correctWords = Math.max(0, typedWords - state.mistakes.length);
   const now = new Date();
   const dateStr = `${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
-  saveHistoryEntry({ date: dateStr, typedWords, correctWords, score: state.score });
-  state.historySaved = true;
+  saveHistoryEntry({ date: dateStr, typedWords, correctWords, score: state.score }, state.historyEntryId);
   renderHistory();
 }
 
@@ -1755,63 +1986,77 @@ document.getElementById("quitBtn").onclick = () => {
 
 document.addEventListener("visibilitychange", () => {
   if (!state || state.ended) return;
-  if (document.hidden && !state.paused) {
-    state.paused = true;
-    document.getElementById("pauseOverlay").classList.add("active");
-    // Tranh thủ lưu tạm kết quả ngay lúc người chơi rời tab (chuyển app khác, tắt màn hình,
-    // đóng trình duyệt...) - đây là thời điểm CUỐI CÙNG có thể chắc chắn code còn chạy được.
-    // Nếu không lưu ở đây, trường hợp người chơi không quay lại nữa (đóng hẳn tab) sẽ mất
-    // trắng kết quả ván đang chơi dở, dù trước đó middle-game vẫn không có cách nào cứu được.
+  if (document.hidden) {
+    if (!state.paused) {
+      state.paused = true;
+      document.getElementById("pauseOverlay").classList.add("active");
+    }
+    // Tranh thủ lưu tạm kết quả mỗi khi tab bị ẩn (chuyển app khác, tắt màn hình, đóng trình
+    // duyệt...) - kể cả khi người chơi ĐÃ tự bấm Pause từ trước (state.paused vốn đã true).
+    // Trước đây điều kiện gộp chung với nhánh set-pause ở trên nên bỏ sót đúng trường hợp này:
+    // nếu người chơi tạm dừng thủ công rồi mới đóng hẳn trình duyệt, sẽ không có cơ hội lưu
+    // được nữa. saveCurrentRunToHistory() tự chống lưu-đúp bằng cờ historySaved nên gọi lại
+    // nhiều lần ở đây là an toàn tuyệt đối.
     saveCurrentRunToHistory();
   }
 });
 
 // ===== RESPONSIVE VIEWPORT / BÀN PHÍM ẢO =====
-// Mục tiêu: màn hình chơi phải co giãn đúng theo chiều cao THẬT còn lại phía trên bàn phím
-// ảo trên điện thoại (không bị bàn phím đè lên nửa dưới màn chơi), nhưng KHÔNG được ảnh
-// hưởng gì đến trải nghiệm trên máy tính (nơi không có bàn phím ảo, visualViewport luôn
-// bằng innerHeight nên các biến CSS dưới đây tự nhiên về đúng giá trị mặc định).
-//
-// Cách hoạt động: window.visualViewport.height PHẢN ÁNH ĐÚNG chiều cao khả dụng thật của
-// trang khi bàn phím ảo mở (khác với 100vh hay window.innerHeight, vốn giữ nguyên kích
-// thước layout gốc và để bàn phím "đè" lên trên mà trình duyệt không co bố cục lại).
-// Từ đó suy ra chiều cao bàn phím = innerHeight - visualViewport.height.
+// Dùng VisualViewport làm nguồn đo khi ô nhập ẩn đang được focus trên điện thoại.
+// Không thay đổi layout chỉ vì desktop resize / browser chrome / cửa sổ trình duyệt.
+// VisualViewport là API phổ biến; VirtualKeyboard API hiện vẫn có độ phủ hạn chế nên
+// chỉ nên là enhancement, không phải dependency bắt buộc. 
+const KEYBOARD_DETECT_MIN_PX = 120;
+
+function isPhoneViewport() {
+  const narrow = window.matchMedia("(max-width: 700px)").matches;
+  const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+  const hasTouch = (navigator.maxTouchPoints || 0) > 0;
+  return narrow && (coarsePointer || hasTouch);
+}
+
 function updateResponsiveViewportVars() {
   const vv = window.visualViewport;
-  const appHeight = vv ? vv.height : window.innerHeight;
-  const keyboardHeight = vv ? Math.max(0, window.innerHeight - vv.height) : 0;
+  const layoutHeight = window.innerHeight;
+  let keyboardHeight = 0;
+  let keyboardOpen = false;
+
+  // Chỉ coi đây là bàn phím ảo khi:
+  // 1) đang ở viewport kiểu điện thoại,
+  // 2) input ẩn thực sự đang focus,
+  // 3) visual viewport bị che một đoạn đủ lớn.
+  // keyboardBaselineHeight giúp bắt đúng cả trình duyệt làm co innerHeight lẫn trình duyệt giữ
+  // layout viewport nhưng làm visualViewport ngắn lại.
+  if (vv && isPhoneViewport() && document.activeElement === mobileInput) {
+    const baseline = keyboardBaselineHeight ?? layoutHeight;
+    const visualBottom = vv.offsetTop + vv.height;
+    const overlapByVisualViewport = Math.max(0, baseline - visualBottom);
+    const overlapByInnerHeight = keyboardBaselineHeight !== null
+      ? Math.max(0, keyboardBaselineHeight - layoutHeight)
+      : 0;
+    keyboardHeight = Math.max(overlapByVisualViewport, overlapByInnerHeight);
+    keyboardOpen = keyboardHeight >= KEYBOARD_DETECT_MIN_PX;
+  }
+
+  // Bình thường: giữ nguyên chiều cao layout viewport.
+  // Khi keyboard thật sự xuất hiện: co game theo visualViewport để ground + bear cùng được đẩy lên.
+  const appHeight = keyboardOpen && vv ? vv.height : layoutHeight;
 
   const root = document.documentElement;
   root.style.setProperty("--app-height", appHeight + "px");
-  root.style.setProperty("--keyboard-height", keyboardHeight + "px");
-  // Thanh trạng thái gõ (typingStatusBar) cao xấp xỉ 56px trên mobile (padding + font-size đã
-  // khai báo trong CSS) - cộng thêm vào offset để #ground/#bearCharacter tránh bị thanh này
-  // che, không chỉ tránh bàn phím. Khi bàn phím đang tắt (keyboardHeight = 0), giữ nguyên mốc
-  // mặc định 54px như hành vi gốc trước đây (đứng yên, không co) để không ảnh hưởng bố cục cũ.
-  const TSB_HEIGHT = 56;
-  const barOffset = keyboardHeight > 0 ? (keyboardHeight + TSB_HEIGHT) : 54;
-  root.style.setProperty("--keyboard-bar-offset", barOffset + "px");
-
-  // QUAN TRỌNG: nếu đang trong ván chơi, đồng bộ lại chiều cao khả dụng thật, để groundY
-  // (dùng để phát hiện va chạm/rơi chạm đất) luôn khớp với vị trí #ground hiển thị trên màn
-  // hình. KHÔNG được gán thẳng vào state.viewportH ngay lập tức: nếu bàn phím vừa bật khiến
-  // chiều cao giảm đột ngột (vd 800px -> 450px), groundY sẽ nhảy giật lên cao ngay trong 1
-  // khung hình, khiến MỌI từ đang ở nửa dưới màn hình bị coi là "vừa chạm đất" cùng lúc —
-  // đúng bug mà state.viewportH vốn được chốt cứng lúc bắt đầu ván để tránh (xem startGame).
-  // Giải pháp: lưu vào state.targetViewportH làm ĐÍCH ĐẾN, để loop() tự trượt dần (lerp) mỗi
-  // khung hình tới đó — mượt mà, không khung hình nào bị nhảy giá trị đột ngột.
   if (state && !state.ended) {
     state.targetViewportH = appHeight;
   }
 }
 
 if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", updateResponsiveViewportVars);
+  window.visualViewport.addEventListener("resize", updateResponsiveViewportVars, { passive: true });
+  window.visualViewport.addEventListener("scroll", updateResponsiveViewportVars, { passive: true });
 } else {
-  // Trình duyệt cũ không hỗ trợ visualViewport (hiếm) - fallback về sự kiện resize thường,
-  // vẫn hoạt động đúng trên máy tính dù kém chính xác hơn khi có bàn phím ảo.
-  window.addEventListener("resize", updateResponsiveViewportVars);
+  window.addEventListener("resize", updateResponsiveViewportVars, { passive: true });
 }
+
+window.addEventListener("resize", updateResponsiveViewportVars, { passive: true });
 updateResponsiveViewportVars();
 
 renderUI();
